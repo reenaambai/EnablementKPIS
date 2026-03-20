@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPIs Every Enablement Manager Should Know</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+    }
+
+    /* Slide container */
+    .slide {
+      display: none;
+      min-height: 100vh;
+      padding: 60px 80px;
+      background: white;
+      position: relative;
+    }
+    .slide.active { display: flex; flex-direction: column; justify-content: center; }
+
+    /* Title slide */
+    .title-slide {
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+    .title-slide h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    .title-slide p {
+      font-size: 20px;
+      color: #666;
+    }
+
+    /* Overview slide */
+    .overview-slide { padding: 60px 80px; justify-content: center; }
+    .overview-slide h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .overview-card {
+      padding: 32px 24px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .overview-card.org { background: #e8f0fe; border-top: 4px solid #1a56db; }
+    .overview-card.team { background: #fef3e2; border-top: 4px solid #b45309; }
+    .overview-card.individual { background: #e6f9ed; border-top: 4px solid #15803d; }
+    .overview-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .overview-card .card-question {
+      font-size: 14px;
+      font-style: italic;
+      color: #555;
+      margin-bottom: 16px;
+    }
+    .overview-card .metric-count {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .overview-card.org .metric-count { color: #1a56db; }
+    .overview-card.team .metric-count { color: #b45309; }
+    .overview-card.individual .metric-count { color: #15803d; }
+    .overview-card .metric-label {
+      font-size: 13px;
+      color: #666;
+    }
+    .overview-card ul {
+      text-align: left;
+      list-style: none;
+      margin-top: 16px;
+      padding: 0;
+      min-height: 40px;
+    }
+    .overview-card li {
+      font-size: 12px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.08);
+      color: #444;
+      cursor: grab;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .overview-card li:hover {
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .overview-card li[data-slide] span { cursor: pointer; }
+    .overview-card li:active { cursor: grabbing; }
+    .overview-card li.dragging {
+      opacity: 0.4;
+      transform: scale(0.95);
+    }
+    .overview-card li .delete-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 2px;
+      line-height: 1;
+    }
+    .overview-card li:hover .delete-btn { display: inline; }
+    .overview-card ul.drag-over {
+      outline: 2px dashed rgba(0,0,0,0.2);
+      outline-offset: 4px;
+      border-radius: 6px;
+    }
+    .add-metric {
+      display: flex;
+      gap: 4px;
+      margin-top: 12px;
+    }
+    .add-metric input {
+      flex: 1;
+      font-size: 12px;
+      padding: 6px 8px;
+      border: 1px dashed rgba(0,0,0,0.2);
+      border-radius: 4px;
+      background: rgba(255,255,255,0.5);
+      outline: none;
+      font-family: inherit;
+    }
+    .add-metric input::placeholder { color: #aaa; }
+    .add-metric input:focus { border-color: rgba(0,0,0,0.4); }
+    .add-metric button {
+      font-size: 16px;
+      background: none;
+      border: 1px dashed rgba(0,0,0,0.2);
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 2px 8px;
+      color: #888;
+    }
+    .add-metric button:hover { background: rgba(0,0,0,0.05); }
+
+    /* Section intro slides */
+    .section-intro {
+      text-align: center;
+      align-items: center;
+    }
+    .section-number {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #999;
+      margin-bottom: 12px;
+    }
+    .section-intro h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section-intro .question {
+      font-size: 20px;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Metric card slides */
+    .metric-slide { padding: 50px 80px; justify-content: center; }
+    .metric-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .metric-badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 4px 12px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .badge-org { background: #e8f0fe; color: #1a56db; }
+    .badge-team { background: #fef3e2; color: #b45309; }
+    .badge-individual { background: #e6f9ed; color: #15803d; }
+
+    .metric-name {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 900px;
+    }
+    .metric-card {
+      padding: 24px;
+      border-radius: 8px;
+      background: #fafafa;
+      border: 1px solid #eee;
+    }
+    .metric-card.full-width {
+      grid-column: 1 / -1;
+    }
+    .metric-card h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+    .metric-card p {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .metric-card.benefit { border-left: 3px solid #22c55e; }
+    .metric-card.downfall { border-left: 3px solid #ef4444; }
+    .metric-card.calc { border-left: 3px solid #3b82f6; }
+    .metric-card.interaction { border-left: 3px solid #a855f7; }
+
+    /* Flip cards */
+    .scenario-slide {
+      padding: 30px 60px;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding-top: 40px;
+    }
+    .scenario-slide h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .scenario-slide .subtitle {
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .flip-card {
+      perspective: 800px;
+      height: 160px;
+      cursor: pointer;
+      min-width: 0;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s ease;
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+    .flip-card-front {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: white;
+    }
+    .flip-card-front .scenario-number {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 6px;
+    }
+    .flip-card-front .scenario-text {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .flip-card-front .flip-hint {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      margin-top: auto;
+      padding-top: 6px;
+    }
+    .flip-card-back {
+      background: white;
+      border: 2px solid #e2e8f0;
+      transform: rotateY(180deg);
+      justify-content: flex-start;
+      padding-top: 14px;
+    }
+    .flip-card-back h4 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #ef4444;
+      margin-bottom: 6px;
+    }
+    .flip-card-back ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .flip-card-back li {
+      font-size: 11.5px;
+      line-height: 1.3;
+      padding: 3px 0 3px 14px;
+      position: relative;
+      color: #334155;
+    }
+    .flip-card-back li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 9px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+    .flip-card-back .flip-hint {
+      font-size: 10px;
+      color: #aaa;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    /* Breadcrumb bar */
+    .breadcrumb {
+      position: fixed;
+      top: 12px;
+      left: 40px;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #999;
+    }
+    .breadcrumb.visible { display: flex; }
+    .breadcrumb a {
+      color: #999;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .breadcrumb a:hover { color: #1a1a1a; }
+    .breadcrumb .sep { margin: 0 2px; }
+    .breadcrumb .current {
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      bottom: 30px;
+      right: 40px;
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+    .nav button {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: background 0.2s;
+    }
+    .nav button:hover { background: #f0f0f0; }
+
+    /* Progress bar */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: #2c3e50;
+      transition: width 0.3s ease;
+      z-index: 100;
+    }
+
+    /* Slide counter */
+    .counter {
+      position: fixed;
+      bottom: 38px;
+      left: 40px;
+      font-size: 13px;
+      color: #999;
+      z-index: 100;
+    }
+
+    /* Title slide path buttons */
+    .title-paths {
+      display: flex;
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .title-path-btn {
+      padding: 18px 36px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+    }
+    .title-path-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .title-path-btn.metrics {
+      background: #1e293b;
+      color: white;
+    }
+    .title-path-btn.scenarios {
+      background: white;
+      color: #1e293b;
+      border: 2px solid #1e293b;
+    }
+    .title-path-btn .btn-sub {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      margin-top: 4px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress" id="progress"></div>
+  <div class="breadcrumb" id="breadcrumb">
+    <a onclick="show(1)">All Metrics</a>
+    <span class="sep">&rsaquo;</span>
+    <span class="current" id="breadcrumb-section"></span>
+    <span class="sep" id="breadcrumb-sep2">&rsaquo;</span>
+    <span class="current" id="breadcrumb-metric"></span>
+  </div>
+  <div class="counter" id="counter"></div>
+  <div class="nav">
+    <button onclick="prev()">&#8592;</button>
+    <button onclick="next()">&#8594;</button>
+  </div>
+
+  <!-- TITLE -->
+  <div class="slide title-slide active">
+    <h1>KPIs Every Enablement<br>Manager Should Know</h1>
+    <p>Revenue Org &nbsp;&bull;&nbsp; Team &nbsp;&bull;&nbsp; Individual</p>
+    <div class="title-paths">
+      <button class="title-path-btn metrics" onclick="show(1)">
+        Explore the Metrics
+        <span class="btn-sub">33 KPIs across 3 levels</span>
+      </button>
+      <button class="title-path-btn scenarios" id="scenarioBtn">
+        Revenue Scenarios
+        <span class="btn-sub">10 diagnostic challenges</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="slide overview-slide">
+    <h2>What We'll Cover</h2>
+    <div class="overview-grid">
+      <div class="overview-card org" data-column="org">
+        <h3>Revenue Org</h3>
+        <p class="card-question">"Is the revenue engine healthy?"</p>
+        <div class="metric-count" data-counter>11</div>
+        <div class="metric-label">metrics</div>
+        <ul>
+          <li draggable="true" data-slide="3"><span>Deal Size</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="4"><span>Win Rate</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="5"><span>Deal Cycle Length</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="6"><span>Retention / Churn</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="7"><span>Number of Opportunities</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="8"><span>Pipeline Coverage Ratio</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="9"><span>Revenue Per Rep</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="10"><span>Quota Attainment Distribution</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="11"><span>Ramp Time</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="12"><span>Forecast Accuracy</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="13"><span>Stage Conversion Rates</span><button class="delete-btn">&times;</button></li>
+        </ul>
+        <div class="add-metric">
+          <input type="text" placeholder="+ Add a metric">
+          <button>+</button>
+        </div>
+      </div>
+      <div class="overview-card team" data-column="team">
+        <h3>Team</h3>
+        <p class="card-question">"Which teams need support and where?"</p>
+        <div class="metric-count" data-counter>10</div>
+        <div class="metric-label">metrics</div>
+        <ul>
+          <li draggable="true" data-slide="15"><span>Avg Deal Size by Team</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="16"><span>Win Rate by Team</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="17"><span>Pipeline Per Rep</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="18"><span>Stage Conversion by Team</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="19"><span>Deal Velocity</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="20"><span>Ramp Time by Cohort</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="21"><span>Revenue Per Rep by Tenure</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="22"><span>New Hire Attrition</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="23"><span>Competitive Win Rate</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="24"><span>Discount Rate</span><button class="delete-btn">&times;</button></li>
+        </ul>
+        <div class="add-metric">
+          <input type="text" placeholder="+ Add a metric">
+          <button>+</button>
+        </div>
+      </div>
+      <div class="overview-card individual" data-column="individual">
+        <h3>Individual</h3>
+        <p class="card-question">"Where is this rep leaking deals?"</p>
+        <div class="metric-count" data-counter>12</div>
+        <div class="metric-label">metrics</div>
+        <ul>
+          <li draggable="true" data-slide="26"><span>Pipeline Generated</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="27"><span>Stage-to-Stage Conversion</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="28"><span>Average Deal Size</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="29"><span>Win Rate</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="30"><span>Deal Cycle Length</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="31"><span>Activity-to-Opp Conversion</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="32"><span>Multi-Threading Depth</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="33"><span>Discount Rate</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="34"><span>Time in Stage</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="35"><span>Talk-to-Listen Ratio</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="36"><span>Demo-to-Proposal Conversion</span><button class="delete-btn">&times;</button></li>
+          <li draggable="true" data-slide="37"><span>Expansion / Cross-Sell</span><button class="delete-btn">&times;</button></li>
+        </ul>
+        <div class="add-metric">
+          <input type="text" placeholder="+ Add a metric">
+          <button>+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: REVENUE ORG INTRO -->
+  <div class="slide section-intro">
+    <div class="section-number">Section 1 of 3</div>
+    <h2>Revenue Organization KPIs</h2>
+    <p class="question">"Is the revenue engine healthy?"</p>
+  </div>
+
+  <!-- ORG METRICS -->
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Deal Size (ACV / ASP)</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Average revenue per closed deal</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Total closed revenue &divide; number of closed deals</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Shows whether reps are moving upmarket and selling value</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Can be inflated by a few outlier deals; doesn't reflect volume</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Larger deals often increase deal cycle length and decrease win rate. Must be read alongside both.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Win Rate</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Percentage of opportunities that close</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Closed-won deals &divide; total deals worked (won + lost)</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Clearest signal of sales effectiveness and deal qualification</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Easily gamed by sandbagging pipeline or only logging sure-things</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low win rate + high pipeline may signal a qualification problem. High win rate + low pipeline means reps aren't prospecting enough.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Deal Cycle Length</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Average days from opportunity creation to close</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Sum of days to close all won deals &divide; number of won deals</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Reveals friction in the sales process; shorter cycles = faster revenue</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Varies heavily by segment (SMB vs. enterprise); averages can mislead</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Longer cycles often correlate with larger deal sizes. Shortening cycle without watching win rate can mean rushing deals.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Retention / Churn Rate</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Percentage of customers retained (or lost) over a period</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Retention: (customers at end &minus; new customers) &divide; customers at start. Churn: customers lost &divide; customers at start.</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Measures whether what's being sold actually sticks post-sale</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Lagging indicator &mdash; by the time it moves, damage is done</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>High churn + high win rate can mean reps are overselling or misqualifying. Connects directly to deal size if churned customers are concentrated in a segment.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Number of Opportunities</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Total open pipeline count</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Count of all active opportunities in CRM</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Top-of-funnel health check; early warning system for future quarters</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Quantity without quality is meaningless &mdash; junk pipe inflates this number</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Must be paired with pipeline coverage ratio and win rate. High opportunity count with low win rate = qualification problem.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Pipeline Coverage Ratio</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How much pipeline exists relative to quota</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Total pipeline value &divide; quota target (target: 3x+)</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Tells you if there's enough pipeline to absorb losses and still hit the number</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Misleading if pipeline is stale or full of stuck deals</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Coverage ratio only matters if win rate and deal cycle are healthy. 5x coverage with 10% win rate is worse than 3x with 35%.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Revenue Per Rep</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Average revenue generated per quota-carrying rep</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Total revenue &divide; number of quota-carrying reps</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Best single measure of sales productivity; useful for headcount planning</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Doesn't distinguish between ramping reps and tenured reps</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Pairs with quota attainment distribution &mdash; revenue per rep can look healthy while being carried by a few top performers.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Quota Attainment Distribution</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How quota performance is spread across the team</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Bucket reps by % of quota hit (e.g., 0-50%, 50-100%, 100%+) and calculate % of team in each bucket</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Reveals whether success is broadly distributed or concentrated in a few stars</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Doesn't explain why reps are underperforming</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>If revenue per rep is high but distribution is skewed, enablement impact is narrow. Broad attainment = scalable sales machine.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Ramp Time to Full Productivity</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How long it takes a new hire to hit full quota</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Average number of months from start date until a rep hits 100% of prorated quota</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Directly measures onboarding and enablement effectiveness</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Definition of "ramped" varies &mdash; must be standardized across the org</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Faster ramp feeds revenue per rep and quota distribution. Long ramp + high attrition = massive cost problem.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Forecast Accuracy</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How close the forecast is to actual results</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>(Forecasted revenue &minus; actual revenue) &divide; actual revenue, expressed as % variance</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Builds leadership trust; signals pipeline discipline and deal inspection rigor</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Can incentivize sandbagging (under-forecasting to always "beat")</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Poor forecast accuracy often traces back to weak stage conversion data and inconsistent deal qualification.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-org">Revenue Org</span>
+      <span class="metric-name">Stage Conversion Rates</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Percentage of deals that advance from one pipeline stage to the next</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Deals that moved to stage N+1 &divide; total deals that entered stage N</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Pinpoints exactly where deals fall out of the funnel</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Only useful if pipeline stages are well-defined and consistently applied</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Feeds win rate (the final conversion), deal cycle, and forecast accuracy. The most diagnostic metric on this list.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: TEAM INTRO -->
+  <div class="slide section-intro">
+    <div class="section-number">Section 2 of 3</div>
+    <h2>Team KPIs</h2>
+    <p class="question">"Which teams need the most support and where?"</p>
+  </div>
+
+  <!-- TEAM METRICS -->
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Average Deal Size by Team</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Whether certain teams are consistently landing bigger or smaller deals</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Total closed revenue for team &divide; number of closed deals for team</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Identifies which teams are selling value vs. discounting to close</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Segment differences (SMB vs. mid-market) make direct comparison unfair without normalization</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Teams with higher deal size often have longer cycles and need different enablement support than high-volume teams.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Win Rate by Team / Segment</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Close rate broken down by team or market segment</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Team's closed-won deals &divide; team's total deals worked</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Reveals whether certain teams have a skill gap, process gap, or market fit gap</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Small sample sizes on newer or smaller teams make this noisy</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Compare against deal size and discount rate &mdash; a team with high win rate but high discounting is buying deals, not winning them.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Pipeline Generated Per Rep</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How much new pipeline each team member is creating</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Total new pipeline created &divide; number of reps on team</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Measures prospecting and sourcing activity at the team level</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Doesn't distinguish between self-sourced and marketing/SDR-sourced pipeline</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low pipeline per rep + high win rate = efficient but at-risk team. High pipeline per rep + low win rate = activity without quality.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Stage Conversion Rates by Team</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Where in the funnel each team is losing deals</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Team's deals advancing to stage N+1 &divide; team's deals that entered stage N</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Pinpoints exactly which sales motion step is breaking for a specific team</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Requires clean CRM data and consistent stage definitions across teams</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>The most actionable team metric &mdash; drives targeted enablement (discovery training, demo coaching, negotiation skills) based on where the leak is.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Deal Velocity</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Speed at which pipeline converts to revenue</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>(Number of opportunities &times; win rate &times; average deal size) &divide; deal cycle length</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Single metric that captures pipeline health, efficiency, and speed in one number</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Composite metric &mdash; hard to know which lever to pull when it moves</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Combines four other metrics. Use it as a summary scorecard, then drill into the components to diagnose.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Ramp Time by Cohort</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Whether onboarding improvements are actually working</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Average months to full productivity for each onboarding class/cohort</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Directly measures enablement program improvement over time</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Confounded by market conditions, territory quality, and hiring bar changes</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Improving ramp time should flow into better revenue per rep and quota attainment distribution over time.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Revenue Per Rep by Tenure</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How experience level correlates with output on each team</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Segment reps by tenure (0-6 mo, 6-12 mo, 12+ mo) and calculate average revenue per bucket</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Reveals whether the team develops reps over time or plateaus</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Survivorship bias &mdash; underperformers leave, inflating tenured rep numbers</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Flat revenue growth by tenure suggests a coaching or enablement gap. Pairs with ramp time to show the full rep lifecycle.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">New Hire Attrition Rate</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Percentage of new hires that leave within 12 months</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>New hires who left within 12 months &divide; total new hires in the cohort</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Early attrition is one of the most expensive problems &mdash; signals hiring, onboarding, or culture issues</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Doesn't distinguish between voluntary and involuntary attrition</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>High attrition + long ramp time = compounding cost. Every rep who leaves before ramping is a pure loss.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Competitive Win Rate</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How the team performs against specific competitors</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Deals won against competitor X &divide; total deals where competitor X was present</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Identifies whether teams need competitive battlecard training or positioning help</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Requires reps to consistently log competitors in CRM, which they often don't</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low competitive win rate + healthy overall win rate means the team avoids competitive deals. That may be smart &mdash; or it may be a blind spot.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-team">Team</span>
+      <span class="metric-name">Discount Rate / Margin Erosion</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How much the team discounts off list price to close</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Average: (list price &minus; sold price) &divide; list price across team deals</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Shows whether the team is selling on value or competing on price</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Some discounting is strategic (land-and-expand); blanket "reduce discounts" can hurt</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>High discount rate + high win rate = buying deals. High discount + short cycle = reps skipping negotiation. Pair with deal size to see full impact.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: INDIVIDUAL INTRO -->
+  <div class="slide section-intro">
+    <div class="section-number">Section 3 of 3</div>
+    <h2>Individual KPIs</h2>
+    <p class="question">"Where is this rep leaking deals?"</p>
+  </div>
+
+  <!-- INDIVIDUAL METRICS -->
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Pipeline Generated</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Total new pipeline a rep creates in a period</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Sum of opportunity values created by the rep in a given period</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Shows whether a rep is self-sourcing or relying entirely on inbound/SDRs</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Reps can inflate by creating low-quality or aspirational opportunities</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Pipeline generated only matters if activity-to-opportunity conversion is also healthy. High pipe + low conversion = junk.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Stage-to-Stage Conversion Rates</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Where in the funnel this specific rep is losing deals</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Rep's deals moving to stage N+1 &divide; rep's deals entering stage N</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>The most precise diagnostic for individual coaching &mdash; pinpoints the exact skill gap</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Small deal counts per rep can make percentages unreliable in short timeframes</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>A rep with low discovery-to-demo conversion needs different coaching than one with low proposal-to-close conversion. Drives targeted enablement.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Average Deal Size</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>The average value of deals a rep closes</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Rep's total closed revenue &divide; rep's number of closed deals</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Reveals whether the rep is selling the full solution or landing small and never expanding</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Segment and territory assignment heavily influence this &mdash; not always a skill issue</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low deal size + high win rate can be fine (volume play) or a problem (not selling value). Pair with discount rate to differentiate.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Win Rate</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Percentage of the rep's opportunities that close</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Rep's closed-won deals &divide; rep's total deals worked</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Direct measure of closing ability and deal qualification skills</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Cherry-picking easy deals or sandbagging pipeline inflates this</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Must be read with pipeline generated &mdash; a 50% win rate on 4 deals is very different from 30% on 40 deals.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Deal Cycle Length</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How long the rep takes to close deals</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Average days from opportunity creation to close for the rep's won deals</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Identifies reps who move deals efficiently vs. those with stalled pipelines</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Reps with larger deal sizes will naturally have longer cycles &mdash; compare within segment</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Compare against time in stage to find where deals are getting stuck. Long cycle + healthy stage conversion = complex deals, not a problem.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Activity-to-Opportunity Conversion</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>What percentage of meetings/calls become real pipeline</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Opportunities created &divide; total meetings/discovery calls held</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Measures whether the rep's prospecting and qualification is effective</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Doesn't capture the quality of the opportunities created</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low conversion here wastes the top of funnel. If pipeline is high but conversion is low, it's a qualification problem.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Multi-Threading Depth</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How many contacts a rep engages per deal</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Average number of contacts with activity on closed-won deals vs. closed-lost deals</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Single-threaded deals are fragile &mdash; multi-threading is the strongest predictor of deal health</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Requires reps to log contacts accurately; not always reliable in CRM</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low multi-threading + long deal cycle = deals stalling because the champion can't sell internally. Directly affects win rate on enterprise deals.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Discount Rate</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How much the rep discounts to close deals</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>(List price &minus; sold price) &divide; list price per deal, averaged</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Shows whether the rep can hold pricing and sell on value</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Not always the rep's fault &mdash; procurement pressure, competitive pressure, and approval processes matter</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>High discounting + fast cycle = skipping negotiation. High discounting + high win rate = buying deals. Pair with deal size to see total revenue impact.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Time in Stage</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How long deals sit at each pipeline stage</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Average number of days deals spend in each stage before advancing or dying</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Identifies exactly where deals are stalling &mdash; more precise than overall cycle length</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Meaningful thresholds differ by stage (discovery takes less time than negotiation)</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>The diagnostic layer underneath deal cycle length. High time at discovery = not qualifying fast enough. High time at negotiation = needs pricing/objection handling help.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Talk-to-Listen Ratio</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>How much time the rep talks vs. listens on calls</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Pulled from conversation intelligence tools (Gong, Chorus) &mdash; rep talk time &divide; total call time</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Proxy for whether the rep is running real discovery or doing a feature dump</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Ideal ratio varies by call type (discovery vs. demo vs. negotiation)</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>High talk ratio + low discovery-to-demo conversion = the rep isn't asking enough questions. Low talk ratio doesn't automatically mean quality.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Demo-to-Proposal Conversion</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Whether demos lead to next steps</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Proposals sent &divide; demos delivered</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Directly measures demo effectiveness &mdash; are demos creating momentum?</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Can be inflated by sending proposals to unqualified prospects</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low demo-to-proposal + good discovery conversion = the demo itself is the problem. If proposals go out but don't close, it's a pricing or negotiation issue.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide metric-slide">
+    <div class="metric-header">
+      <span class="metric-badge badge-individual">Individual</span>
+      <span class="metric-name">Expansion / Cross-Sell Revenue</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>What It Measures</h4>
+        <p>Revenue generated from existing customers (for AMs)</p>
+      </div>
+      <div class="metric-card calc">
+        <h4>How to Calculate</h4>
+        <p>Total expansion revenue &divide; total book of business (net revenue retention from rep's accounts)</p>
+      </div>
+      <div class="metric-card benefit">
+        <h4>Benefit</h4>
+        <p>Measures whether AMs are growing accounts or just maintaining them</p>
+      </div>
+      <div class="metric-card downfall">
+        <h4>Downfall</h4>
+        <p>Expansion potential varies wildly by account &mdash; some accounts simply have no room to grow</p>
+      </div>
+      <div class="metric-card interaction full-width">
+        <h4>How It Interacts With Other Metrics</h4>
+        <p>Low expansion + high retention = stable but stagnant. High expansion + high churn on other accounts = focused on easy upsells, ignoring at-risk accounts.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: REVENUE SCENARIOS INTRO -->
+  <div class="slide section-intro">
+    <div class="section-number">Bonus Section</div>
+    <h2>Revenue Scenario Diagnosis</h2>
+    <p class="question">"What's actually causing this problem?"</p>
+  </div>
+
+  <!-- SCENARIOS 1-4 -->
+  <div class="slide scenario-slide">
+    <h2>Revenue Scenarios (1-4)</h2>
+    <p class="subtitle">Click a card to reveal the root causes</p>
+    <div class="scenario-grid">
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 1</div>
+            <div class="scenario-text">Pipeline coverage is 4x but the team is still missing quota every quarter.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>Win rate is low &mdash; pipe exists but isn't converting</li>
+              <li>Pipeline is stale (deals sitting 2x+ average cycle length)</li>
+              <li>Poor qualification &mdash; junk opportunities inflating coverage</li>
+              <li>Deals stuck in late stages with no clear path to close</li>
+              <li>Reps creating pipeline to hit activity goals, not to win</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 2</div>
+            <div class="scenario-text">Your top AE just resigned. She was carrying 40% of the team's revenue.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>Quota attainment concentrated, not distributed across the team</li>
+              <li>No playbook capturing what top performers do differently</li>
+              <li>Single-threaded relationships &mdash; customers loyal to rep, not company</li>
+              <li>Enablement focused on bottom performers instead of scaling what works</li>
+              <li>Manager coaching is inconsistent or nonexistent</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 3</div>
+            <div class="scenario-text">Win rate is a healthy 32%, but total revenue is declining quarter over quarter.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>Deal sizes shrinking &mdash; reps discounting or landing smaller</li>
+              <li>Fewer new opportunities entering the pipeline (volume problem)</li>
+              <li>Losing enterprise deals and winning only SMB</li>
+              <li>Longer cycles mean fewer closes per quarter at same win rate</li>
+              <li>Expansion/cross-sell dried up while new logo holds steady</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 4</div>
+            <div class="scenario-text">New hires ramp on schedule, but attrition spikes at the 9-month mark.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>Ramp quota too easy &mdash; reps hit a cliff when full quota kicks in</li>
+              <li>Territory or book of business can't sustain a full quota</li>
+              <li>Onboarding ends and ongoing enablement/coaching drops off</li>
+              <li>Comp plan doesn't reward growth &mdash; reps feel stuck</li>
+              <li>Culture or manager issues surface after "honeymoon phase"</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCENARIOS 5-8 -->
+  <div class="slide scenario-slide">
+    <h2>Revenue Scenarios (5-8)</h2>
+    <p class="subtitle">Click a card to reveal the root causes</p>
+    <div class="scenario-grid">
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 5</div>
+            <div class="scenario-text">Discovery calls convert to demos at 60%, but demos rarely lead to proposals.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>Demo isn't tailored to what was uncovered in discovery</li>
+              <li>Wrong personas in the demo &mdash; economic buyer isn't present</li>
+              <li>Reps feature-dumping instead of tying back to pain</li>
+              <li>No clear next steps or mutual action plan after the demo</li>
+              <li>Discovery is surface-level &mdash; real problems aren't uncovered</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 6</div>
+            <div class="scenario-text">Revenue per rep is up 20% YoY, but only 30% of the team is hitting quota.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>A few whale deals masking broad underperformance</li>
+              <li>Territory or account distribution is wildly uneven</li>
+              <li>Enablement not reaching the middle 60% of the team</li>
+              <li>Coaching is reactive (struggling reps) instead of proactive</li>
+              <li>Quotas set too high &mdash; only outlier deals clear the bar</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 7</div>
+            <div class="scenario-text">Average deal cycle has increased from 45 to 72 days over the past two quarters.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>More stakeholders getting involved in buying decisions</li>
+              <li>Reps aren't multi-threading &mdash; single-threaded deals stall</li>
+              <li>No ROI or business case materials for champion to use internally</li>
+              <li>Procurement added new approval steps or vendor review</li>
+              <li>Reps not disqualifying &mdash; dead deals inflating the average</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 8</div>
+            <div class="scenario-text">BDR team is crushing meeting targets, but AEs say the leads are garbage.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>BDR incentives tied to volume (meetings), not quality (pipe)</li>
+              <li>ICP isn't well-defined or BDRs targeting outside it</li>
+              <li>Qualification criteria (BANT/MEDDIC) not enforced at handoff</li>
+              <li>Handoff process broken &mdash; context doesn't reach the AE</li>
+              <li>BDRs lack product knowledge to qualify beyond "took a meeting"</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCENARIOS 9-10 -->
+  <div class="slide scenario-slide">
+    <h2>Revenue Scenarios (9-10)</h2>
+    <p class="subtitle">Click a card to reveal the root causes</p>
+    <div class="scenario-grid">
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 9</div>
+            <div class="scenario-text">New logo acquisition is growing 25% YoY, but net revenue retention is stuck at 95%.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>AMs/CSMs aren't trained on cross-sell or expansion motions</li>
+              <li>No expansion playbook &mdash; AMs maintaining, not growing accounts</li>
+              <li>Sales-to-CS handoff drops context on what was sold or promised</li>
+              <li>Product adoption is low, no foundation for upsell conversations</li>
+              <li>Churn in one segment canceling out expansion in another</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="scenario-number">Scenario 10</div>
+            <div class="scenario-text">The team's forecast is off by 30%+ every quarter. Leadership has lost trust in the number.</div>
+            <div class="flip-hint">Click to reveal root causes</div>
+          </div>
+          <div class="flip-card-back">
+            <h4>Possible Root Causes</h4>
+            <ul>
+              <li>Stage definitions are vague &mdash; reps assign stages on gut feel</li>
+              <li>No deal inspection rigor (managers not pressure-testing commits)</li>
+              <li>Reps sandbag or over-commit to avoid hard conversations</li>
+              <li>CRM hygiene poor &mdash; close dates, amounts, and stages are stale</li>
+              <li>No standard forecasting methodology (weighted, commit/best case)</li>
+            </ul>
+            <div class="flip-hint">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+
+    function show(index) {
+      slides[current].classList.remove('active');
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides[current].classList.add('active');
+      document.getElementById('progress').style.width = ((current / (slides.length - 1)) * 100) + '%';
+      document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+      updateBreadcrumb();
+    }
+
+    function updateBreadcrumb() {
+      const bc = document.getElementById('breadcrumb');
+      const sectionEl = document.getElementById('breadcrumb-section');
+      const metricEl = document.getElementById('breadcrumb-metric');
+      const sep2 = document.getElementById('breadcrumb-sep2');
+
+      // Hide on title and overview slides
+      if (current <= 1) {
+        bc.classList.remove('visible');
+        return;
+      }
+      bc.classList.add('visible');
+
+      // Determine section and metric name
+      let section = '';
+      let metric = '';
+
+      const totalSlides = slides.length;
+      // Scenario section starts 4 slides from the end (intro + 3 scenario slides)
+      const scenarioIntro = totalSlides - 4;
+
+      if (current >= 3 && current <= 13) {
+        section = 'Revenue Org';
+      } else if (current >= 15 && current <= 24) {
+        section = 'Team';
+      } else if (current >= 26 && current <= 37) {
+        section = 'Individual';
+      } else if (current >= scenarioIntro) {
+        section = 'Scenarios';
+      }
+
+      // Section intro slides
+      if (current === 2) { section = 'Revenue Org'; }
+      if (current === 14) { section = 'Team'; }
+      if (current === 25) { section = 'Individual'; }
+      if (current === scenarioIntro) { section = 'Scenarios'; }
+
+      // Get metric name from the slide if it's a metric slide
+      const activeSlide = slides[current];
+      const nameEl = activeSlide.querySelector('.metric-name');
+      if (nameEl) {
+        metric = nameEl.textContent;
+      }
+
+      sectionEl.textContent = section;
+      if (metric) {
+        sep2.style.display = 'inline';
+        metricEl.textContent = metric;
+      } else {
+        sep2.style.display = 'none';
+        metricEl.textContent = '';
+      }
+    }
+
+    function next() { show(current + 1); }
+    function prev() { show(current - 1); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (e.target.tagName === 'INPUT') return;
+        e.preventDefault(); next();
+      }
+      if (e.key === 'ArrowLeft') {
+        if (e.target.tagName === 'INPUT') return;
+        e.preventDefault(); prev();
+      }
+    });
+
+    show(0);
+
+    // Wire up scenario button to jump to scenario intro slide (4 from the end)
+    document.getElementById('scenarioBtn').addEventListener('click', function() {
+      show(slides.length - 4);
+    });
+
+    // --- Overview slide: drag & drop, add, delete ---
+
+    let draggedItem = null;
+
+    function updateCounts() {
+      document.querySelectorAll('.overview-card').forEach(card => {
+        const count = card.querySelectorAll('ul li').length;
+        const counter = card.querySelector('[data-counter]');
+        if (counter) counter.textContent = count;
+      });
+    }
+
+    function makeItemDraggable(li) {
+      li.setAttribute('draggable', 'true');
+
+      li.addEventListener('dragstart', (e) => {
+        draggedItem = li;
+        li.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      li.addEventListener('dragend', () => {
+        li.classList.remove('dragging');
+        draggedItem = null;
+        document.querySelectorAll('.overview-card ul').forEach(ul => ul.classList.remove('drag-over'));
+        updateCounts();
+      });
+
+      li.querySelector('.delete-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        li.remove();
+        updateCounts();
+      });
+    }
+
+    // Click to navigate to detail slide
+    let didDrag = false;
+
+    function makeItemClickable(li) {
+      li.addEventListener('mousedown', () => { didDrag = false; });
+      li.addEventListener('mousemove', () => { didDrag = true; });
+      li.querySelector('span').addEventListener('click', () => {
+        if (didDrag) return;
+        const target = li.getAttribute('data-slide');
+        if (target) show(parseInt(target));
+      });
+    }
+
+    // Set up all existing items
+    document.querySelectorAll('.overview-card li').forEach(li => {
+      makeItemDraggable(li);
+      makeItemClickable(li);
+    });
+
+    // Set up drop zones (each ul)
+    document.querySelectorAll('.overview-card ul').forEach(ul => {
+      ul.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        ul.classList.add('drag-over');
+
+        const afterElement = getDragAfterElement(ul, e.clientY);
+        if (afterElement) {
+          ul.insertBefore(draggedItem, afterElement);
+        } else {
+          ul.appendChild(draggedItem);
+        }
+      });
+
+      ul.addEventListener('dragleave', (e) => {
+        if (!ul.contains(e.relatedTarget)) {
+          ul.classList.remove('drag-over');
+        }
+      });
+
+      ul.addEventListener('drop', (e) => {
+        e.preventDefault();
+        ul.classList.remove('drag-over');
+        updateCounts();
+      });
+    });
+
+    function getDragAfterElement(ul, y) {
+      const items = [...ul.querySelectorAll('li:not(.dragging)')];
+      return items.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // Add new metric
+    document.querySelectorAll('.add-metric').forEach(container => {
+      const input = container.querySelector('input');
+      const btn = container.querySelector('button');
+      const ul = container.previousElementSibling;
+
+      function addMetric() {
+        const text = input.value.trim();
+        if (!text) return;
+        const li = document.createElement('li');
+        li.innerHTML = '<span>' + text + '</span><button class="delete-btn">&times;</button>';
+        makeItemDraggable(li);
+        ul.appendChild(li);
+        input.value = '';
+        updateCounts();
+      }
+
+      btn.addEventListener('click', addMetric);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); addMetric(); }
+      });
+    });
+  </script>
+
+</body>
+</html>
